@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  api:
+    build: .
+    container_name: face_mask_detection_api
+    ports:
+      - "8000:8000"
+    environment:
+      - MODEL_PATH=models/best_model.h5
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./models:/app/models
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    build: .
+    container_name: face_mask_detection_frontend
+    ports:
+      - "5000:5000"
+    environment:
+      - API_URL=http://api:8000
+    depends_on:
+      - api
+    restart: unless-stopped
+    command: python task5_frontend/app.py
+
+networks:
+  default:
+    name: face_mask_detection_network
