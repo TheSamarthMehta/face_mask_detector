@@ -75,3 +75,5 @@ Thumbs.db
 
 # Deployment
 *.pid
+
+frontend/node_modules/
